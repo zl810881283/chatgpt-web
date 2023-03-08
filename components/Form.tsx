@@ -48,7 +48,6 @@ const Form = () => {
       },
       body: JSON.stringify({
         message,
-        currentModel,
       }),
     });
     console.log('Edge function returned.');
@@ -106,24 +105,9 @@ const Form = () => {
 
   useSWR('fetchingModels', fetcher);
 
-  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentModel(e.target.value);
-  };
 
   return (
     <div className='flex justify-center'>
-      <select
-        value={currentModel}
-        onChange={handleModelChange}
-        className='w-72 fixed top-5 left-5 outline-none border-none p-4 rounded-md bg-white text-gray-500 dark:hover:text-gray-400 dark:hover:bg-gray-900'
-      >
-        {models.map((model) => (
-          <option key={model.id} value={model.id}>
-            {model.id}
-          </option>
-        ))}
-      </select>
-
       <button
         onClick={handleReset}
         type='reset'
@@ -131,38 +115,36 @@ const Form = () => {
       >
         Clear History
       </button>
-      <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 last:mb-6 md:mx-auto md:max-w-3xl'>
+      <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 md:mx-auto md:max-w-3xl mb-24'>
         {isLoading
           ? response.map((item: any, index: number) => {
-              return (
-                <div
-                  key={index}
-                  className={`${
-                    index % 2 === 0 ? 'bg-blue-500' : 'bg-gray-500'
+            return (
+              <div
+                key={index}
+                className={`${index % 2 === 0 ? 'bg-blue-500' : 'bg-gray-500'
                   } p-3 rounded-lg`}
-                >
-                  <p>{item}</p>
-                </div>
-              );
-            })
+              >
+                <p>{item}</p>
+              </div>
+            );
+          })
           : response
-          ? response.map((item: string, index: number) => {
+            ? response.map((item: string, index: number) => {
               return (
                 <div
                   key={index}
-                  className={`${
-                    index % 2 === 0 ? 'bg-blue-500' : 'bg-gray-500'
-                  } p-3 rounded-lg`}
+                  className={`${index % 2 === 0 ? 'bg-blue-500' : 'bg-gray-500'
+                    } p-3 rounded-lg`}
                 >
                   <p>{item}</p>
                 </div>
               );
             })
-          : null}
+            : null}
       </div>
       <form
         onSubmit={handleSubmit}
-        className='fixed bottom-0 w-full md:max-w-3xl bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] mb-4'
+        className='fixed bottom-0 w-full md:max-w-3xl bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]'
       >
         <textarea
           name='Message'
