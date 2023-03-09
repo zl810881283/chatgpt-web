@@ -6,7 +6,6 @@ type PasswordProps = {
 	onSuccess?: () => void
 }
 
-const USER_PASSWORD = process.env.USER_PASSWORD ?? "ChatGPT"
 
 export const Password: FC<PasswordProps> = ({ onSuccess }) => {
 	const [userInput, setUserInput] = useState<string>('');
@@ -34,8 +33,19 @@ export const Password: FC<PasswordProps> = ({ onSuccess }) => {
 		chackPassword(userInput)
 	}
 
-	const chackPassword = (password: string) => {
-		if (password == USER_PASSWORD) {
+	const chackPassword = async (password: string) => {
+
+		const { result } = await (await fetch('/api/password-check', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				password
+			}),
+		})).json();
+
+		if (result) {
 			onSuccess?.()
 			localStorage.setItem('password', password);
 		} else {
