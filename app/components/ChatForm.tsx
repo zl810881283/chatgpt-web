@@ -18,7 +18,7 @@ const downloadTxtFile = (txt: string) => {
   const file = new Blob([txt], { type: 'text/plain' });
   element.href = URL.createObjectURL(file);
   element.style.display = "none"
-  element.download = `chatgpt-${Date.now()}.txt`;
+  element.download = `conversation-${Date.now()}.txt`;
   document.body.appendChild(element); // required for this to work in FireFox
   element.click();
 }
@@ -117,7 +117,7 @@ export const ChatForm: FC = () => {
     setMessages([]);
   };
   const handleExport = () => {
-    downloadTxtFile(messages.map(i => i.content).join("\n------------------------------\n"))
+    downloadTxtFile(messages.map(i => `${i.role}:\n${i.content}`).join("\n------------------------------\n"))
   }
 
   useSWR('fetchingMessages', async () => {

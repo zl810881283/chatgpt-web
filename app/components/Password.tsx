@@ -8,7 +8,6 @@ type PasswordProps = {
 
 const USER_PASSWORD = process.env.USER_PASSWORD ?? "ChatGPT"
 
-
 export const Password: FC<PasswordProps> = ({ onSuccess }) => {
 	const [userInput, setUserInput] = useState<string>('');
 	const [passwordError, setPasswordError] = useState(false)
