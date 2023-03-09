@@ -1,5 +1,6 @@
 'use client';
 import { ChatGPTMessage } from '@/app/api/chat/route';
+import { Button, FormControlLabel, FormGroup, Switch } from '@mui/material';
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -29,6 +30,9 @@ export const ChatForm: FC = () => {
 
   const [userInput, setUserInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [isConversation, setIsConversation] = useState<boolean>(false);
+
   const [models, setModels] = useState<ModelType[]>([]);
   const [currentModel, setCurrentModel] = useState<string>('gpt-3.5-turbo');
 
@@ -61,12 +65,12 @@ export const ChatForm: FC = () => {
     setUserInput("")
     setIsLoading(true);
 
-    let newMessages: ChatGPTMessage[] = [...messages, {
+    let currMessages: ChatGPTMessage[] = [...messages, {
       role: "user",
       content: userInput
     }]
 
-    setMessages(newMessages);
+    setMessages(currMessages);
     setTimeout(() => scrollToBottom(), 100)
 
     const resp = await fetch('/api/chat', {
@@ -75,7 +79,7 @@ export const ChatForm: FC = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages: newMessages,
+        messages: isConversation ? currMessages : currMessages.slice(-1),
       }),
     });
 
@@ -96,19 +100,19 @@ export const ChatForm: FC = () => {
       const { value, done } = await reader.read();
       const isFirst = !currentResponse
       currentResponse += decoder.decode(value);
-      newMessages
+      currMessages
       if (isFirst) {
-        newMessages = [...newMessages, { role: "assistant", content: currentResponse }]
+        currMessages = [...currMessages, { role: "assistant", content: currentResponse }]
       } else {
-        newMessages = [...newMessages.slice(0, -1), { role: "assistant", content: currentResponse }]
+        currMessages = [...currMessages.slice(0, -1), { role: "assistant", content: currentResponse }]
       }
-      setMessages(newMessages)
+      setMessages(currMessages)
       scrollToBottom()
 
       if (done) break
     }
     // breaks text indent on refresh due to streaming
-    localStorage.setItem('messages', JSON.stringify(newMessages));
+    localStorage.setItem('messages', JSON.stringify(currMessages));
     setIsLoading(false);
   };
 
@@ -143,25 +147,32 @@ export const ChatForm: FC = () => {
 
   return (
     <div className='flex justify-center'>
-      <button
-        onClick={handleReset}
-        type='reset'
-        className='fixed top-5 left-5 w-48 p-4 rounded-md bg-white text-gray-500 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent'
-        disabled={isLoading}
+      <div
+        className='fixed top-3 left-3 right-3 flex justify-between'
       >
-        Clear Conversation
-      </button>
-      <button
-        onClick={handleExport}
-        type='reset'
-        className='fixed top-5 right-5 w-48 p-4 rounded-md bg-white text-gray-500 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent'
-        disabled={isLoading || messages.length == 0}
+        <Button variant="contained" size='large'
+          sx={{ textTransform: "none" }}
+          onClick={handleReset}
+          disabled={isLoading}
+        >Clear</Button>
 
-      >
-        Export Text
-      </button>
+        <FormControlLabel
+          control={<Switch />} label="Conversation"
+          value={isConversation}
+          onChange={(evt, checked) => setIsConversation(checked)}
+          disabled={isLoading}
+        />
 
-      <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 md:mx-auto md:max-w-3xl mt-20'>
+        <Button variant="contained" size='large'
+          sx={{ textTransform: "none" }}
+          onClick={handleExport}
+          disabled={isLoading || messages.length == 0}
+        >Export</Button>
+
+      </div>
+
+
+      <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 md:mx-auto md:max-w-3xl mt-14'>
         {messages.map((i, idx) => {
           if (i.role == "user") {
             return <div key={idx} className={'bg-blue-500 p-3 rounded-lg'}            >
