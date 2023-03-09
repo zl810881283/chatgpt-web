@@ -1,6 +1,6 @@
 'use client';
 import { ChatGPTMessage } from '@/app/api/chat/route';
-import { Button, FormControlLabel, FormGroup, Switch } from '@mui/material';
+import { Alert, Button, FormControlLabel, FormGroup, Snackbar, Switch } from '@mui/material';
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -26,12 +26,20 @@ const downloadTxtFile = (txt: string) => {
 
 
 export const ChatForm: FC = () => {
-  const [messages, setMessages] = useState<ChatGPTMessage[]>([]);
+  const [messageList, setMessageList] = useState<ChatGPTMessage[]>([]);
 
   const [userInput, setUserInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [isConversation, setIsConversation] = useState<boolean>(false);
+
+  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
+  const [alertContent, setAlertContent] = useState<string>("");
+
+  const showAlert = (msg: string) => {
+    setAlertContent(msg)
+    setIsAlertOpen(true)
+  }
 
   const [models, setModels] = useState<ModelType[]>([]);
   const [currentModel, setCurrentModel] = useState<string>('gpt-3.5-turbo');
@@ -62,15 +70,22 @@ export const ChatForm: FC = () => {
     if (!userInput) {
       return;
     }
-    setUserInput("")
-    setIsLoading(true);
 
-    let currMessages: ChatGPTMessage[] = [...messages, {
+    let currMessageList: ChatGPTMessage[] = [...messageList, {
       role: "user",
       content: userInput
     }]
 
-    setMessages(currMessages);
+    if (isConversation && currMessageList.map(i => i.content.length).reduce((i, j) => i + j, 0) > 2000) {
+      showAlert("Current conversation has too many tokens(>2000), please close conversation mode or click \"Clear\" button to start a new conversation")
+      return
+    }
+
+    setUserInput("")
+    setIsLoading(true);
+
+
+    setMessageList(currMessageList);
     setTimeout(() => scrollToBottom(), 100)
 
     const resp = await fetch('/api/chat', {
@@ -79,7 +94,7 @@ export const ChatForm: FC = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages: isConversation ? currMessages : currMessages.slice(-1),
+        messages: isConversation ? currMessageList : currMessageList.slice(-1),
       }),
     });
 
@@ -100,34 +115,34 @@ export const ChatForm: FC = () => {
       const { value, done } = await reader.read();
       const isFirst = !currentResponse
       currentResponse += decoder.decode(value);
-      currMessages
+      currMessageList
       if (isFirst) {
-        currMessages = [...currMessages, { role: "assistant", content: currentResponse }]
+        currMessageList = [...currMessageList, { role: "assistant", content: currentResponse }]
       } else {
-        currMessages = [...currMessages.slice(0, -1), { role: "assistant", content: currentResponse }]
+        currMessageList = [...currMessageList.slice(0, -1), { role: "assistant", content: currentResponse }]
       }
-      setMessages(currMessages)
+      setMessageList(currMessageList)
       scrollToBottom()
 
       if (done) break
     }
     // breaks text indent on refresh due to streaming
-    localStorage.setItem('messages', JSON.stringify(currMessages));
+    localStorage.setItem('messages', JSON.stringify(currMessageList));
     setIsLoading(false);
   };
 
   const handleReset = () => {
     localStorage.removeItem('messages');
-    setMessages([]);
+    setMessageList([]);
   };
   const handleExport = () => {
-    downloadTxtFile(messages.map(i => `${i.role}:\n${i.content}`).join("\n------------------------------\n"))
+    downloadTxtFile(messageList.map(i => `${i.role}:\n${i.content}`).join("\n------------------------------\n"))
   }
 
   useSWR('fetchingMessages', async () => {
     const storedMessages = localStorage.getItem('messages');
     if (storedMessages) {
-      setMessages(JSON.parse(storedMessages));
+      setMessageList(JSON.parse(storedMessages));
       setTimeout(() => scrollToBottom(true), 100)
     }
   });
@@ -166,14 +181,14 @@ export const ChatForm: FC = () => {
         <Button variant="contained" size='large'
           sx={{ textTransform: "none" }}
           onClick={handleExport}
-          disabled={isLoading || messages.length == 0}
+          disabled={isLoading || messageList.length == 0}
         >Export</Button>
 
       </div>
 
 
       <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 md:mx-auto md:max-w-3xl mt-14'>
-        {messages.map((i, idx) => {
+        {messageList.map((i, idx) => {
           if (i.role == "user") {
             return <div key={idx} className={'bg-blue-500 p-3 rounded-lg'}            >
               <p style={{ whiteSpace: "pre-wrap" }}>{i.content}</p>
@@ -220,6 +235,13 @@ export const ChatForm: FC = () => {
           </svg>
         </button>
       </form>
+
+      <Snackbar open={isAlertOpen} autoHideDuration={6000} onClose={() => setIsAlertOpen(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert onClose={() => setIsAlertOpen(false)} severity="error" sx={{ width: '100%' }}>
+          {alertContent}
+        </Alert>
+      </Snackbar>
+
     </div>
   );
 };

@@ -102,7 +102,7 @@ export async function POST(req: Request): Promise<Response> {
     ...{
       model: 'gpt-3.5-turbo',
       stream: true,
-      max_tokens: 1000,
+      max_tokens: 2000,
     }
   };
 
