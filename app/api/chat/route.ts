@@ -4,7 +4,7 @@ import {
   ReconnectInterval,
 } from 'eventsource-parser';
 
-export type ChatGPTAgent = 'user' | 'system';
+export type ChatGPTAgent = 'user' | 'system' | 'assistant';
 
 export interface ChatGPTMessage {
   role: ChatGPTAgent;
@@ -14,16 +14,21 @@ export interface ChatGPTMessage {
 export interface OpenAIStreamPayload {
   model: string;
   messages: ChatGPTMessage[];
-  temperature: number;
-  top_p: number;
-  frequency_penalty: number;
-  presence_penalty: number;
-  max_tokens: number;
-  stream: boolean;
-  n: number;
+  temperature?: number;
+  top_p?: number;
+  frequency_penalty?: number;
+  presence_penalty?: number;
+  max_tokens?: number;
+  stream?: boolean;
+  n?: number;
 }
 
-export async function OpenAIStream(payload: OpenAIStreamPayload) {
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+if (!OPENAI_API_KEY) {
+  throw new Error('Missing env var from OpenAI');
+}
+
+export async function genOpenAIStream(payload: OpenAIStreamPayload) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -78,3 +83,29 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
 
   return stream;
 }
+
+export async function POST(req: Request): Promise<Response> {
+
+  const reqPayload = (await req.json()) as OpenAIStreamPayload;
+
+  if (reqPayload.messages.length == 0) {
+    return new Response('No message in the request', { status: 400 });
+  }
+
+  const payload: OpenAIStreamPayload = {
+    temperature: 0.7,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 1.0,
+    n: 1,
+    ...reqPayload,
+    ...{
+      model: 'gpt-3.5-turbo',
+      stream: true,
+      max_tokens: 1000,
+    }
+  };
+
+  return new Response(await genOpenAIStream(payload));
+};
+
