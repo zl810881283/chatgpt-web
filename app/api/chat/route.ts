@@ -4,9 +4,7 @@ import {
   ReconnectInterval,
 } from 'eventsource-parser';
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = 'edge'
 
 export type ChatGPTAgent = 'user' | 'system' | 'assistant';
 
