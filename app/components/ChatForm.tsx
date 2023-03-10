@@ -88,7 +88,7 @@ export const ChatForm: FC = () => {
     setMessageList(currMessageList);
     setTimeout(() => scrollToBottom(), 100)
 
-    const resp = await fetch('/api/chat', {
+    const resp = await fetch('/api/chat2', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
