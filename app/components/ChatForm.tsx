@@ -5,6 +5,8 @@ import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
 import SendIcon from '@mui/icons-material/Send';
+import useResizeObserver from '@react-hook/resize-observer'
+
 interface ModelType {
   object: 'engine';
   id: string;
@@ -63,6 +65,7 @@ export const ChatForm: FC = () => {
         bottomLine.current.scrollIntoView(false);
     }
   }
+  useResizeObserver(document.body, () => scrollToBottom(true))
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
