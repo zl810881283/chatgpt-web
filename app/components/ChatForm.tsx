@@ -1,10 +1,10 @@
 'use client';
 import { ChatGPTMessage } from '@/app/api/chat/route';
-import { Alert, Button, FormControlLabel, FormGroup, Snackbar, Switch } from '@mui/material';
+import { Alert, Button, Divider, FormControlLabel, FormGroup, IconButton, InputBase, Paper, Snackbar, Switch } from '@mui/material';
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
-
+import SendIcon from '@mui/icons-material/Send';
 interface ModelType {
   object: 'engine';
   id: string;
@@ -204,7 +204,32 @@ export const ChatForm: FC = () => {
         <div ref={bottomLine} className='w-full h-20'></div>
 
       </div>
-      <form
+
+
+      <Paper
+        component="form"
+        className='fixed bottom-0 w-full md:max-w-3xl p-2'
+        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}
+        onSubmit={handleSubmit}
+      >
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder="Type your query"
+          multiline
+          value={userInput}
+          onChange={(evt) => setUserInput(evt.target.value)}
+          onKeyDown={handleEnter}
+        />
+        <IconButton
+          className='p-4'
+          type='submit'
+          disabled={isLoading}
+        >
+          <SendIcon />
+        </IconButton>
+      </Paper>
+
+      {/* <form
         onSubmit={handleSubmit}
         className='fixed bottom-0 w-full md:max-w-3xl bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]'
       >
@@ -234,7 +259,7 @@ export const ChatForm: FC = () => {
             <path d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z'></path>
           </svg>
         </button>
-      </form>
+      </form> */}
 
       <Snackbar open={isAlertOpen} autoHideDuration={6000} onClose={() => setIsAlertOpen(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
         <Alert onClose={() => setIsAlertOpen(false)} severity="error" sx={{ width: '100%' }}>
