@@ -65,7 +65,7 @@ export const ChatForm: FC = () => {
         bottomLine.current.scrollIntoView(false);
     }
   }
-  useResizeObserver(document.body, () => scrollToBottom(true))
+  // useResizeObserver(document.body, () => scrollToBottom(true))
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
