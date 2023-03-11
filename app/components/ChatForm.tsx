@@ -190,12 +190,12 @@ export const ChatForm: FC = () => {
       <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 md:mx-auto md:max-w-3xl mt-14'>
         {messageList.map((i, idx) => {
           if (i.role == "user") {
-            return <div key={idx} className={'bg-blue-500 p-3 rounded-lg'}            >
+            return <div key={idx} className={'bg-blue-300 dark:bg-blue-500 p-3 rounded-lg'}            >
               <p style={{ whiteSpace: "pre-wrap" }}>{i.content}</p>
             </div>
           }
           if (i.role == "assistant") {
-            return <div key={idx} className={'bg-gray-500 p-3 rounded-lg'}            >
+            return <div key={idx} className={'bg-gray-300 dark:bg-gray-500 p-3 rounded-lg'}            >
               <p style={{ whiteSpace: "pre-wrap" }}>{i.content}</p>
             </div>
           }
@@ -208,7 +208,7 @@ export const ChatForm: FC = () => {
 
       <Paper
         component="form"
-        className='fixed bottom-0 w-full md:max-w-3xl p-2'
+        className='fixed bottom-0 w-full md:max-w-3xl p-4'
         sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}
         onSubmit={handleSubmit}
       >
