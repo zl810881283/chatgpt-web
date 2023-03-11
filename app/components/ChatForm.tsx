@@ -187,7 +187,7 @@ export const ChatForm: FC = () => {
       </div>
 
 
-      <div className='w-full mx-2 flex flex-col items-start gap-3 pt-6 md:mx-auto md:max-w-3xl '>
+      <div className='w-full mx-2 flex flex-col items-start gap-3 md:mx-auto md:max-w-3xl mt-20'>
         {messageList.map((i, idx) => {
           if (i.role == "user") {
             return <div key={idx} className={'bg-blue-300 dark:bg-blue-500 p-3 rounded-lg'}            >
