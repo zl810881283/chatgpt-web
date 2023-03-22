@@ -54,7 +54,8 @@ export const ChatForm: FC = () => {
     e: React.KeyboardEvent<HTMLTextAreaElement> &
       React.FormEvent<HTMLFormElement>
   ) => {
-    if (e.key === 'Enter' && isLoading === false) {
+    // use meta+enter/ctrl+enter to submit
+    if (e.key === 'Enter'&& (e.metaKey || e.ctrlKey) && isLoading === false) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -217,8 +218,9 @@ export const ChatForm: FC = () => {
         onSubmit={handleSubmit}
       >
         <InputBase
+          className='max-h-40 overflow-y-auto'
           sx={{ ml: 1, flex: 1 }}
-          placeholder="Type your query"
+          placeholder="Type your query, use ctrl or command + enter to submit"
           multiline
           value={userInput}
           onChange={(evt) => setUserInput(evt.target.value)}
