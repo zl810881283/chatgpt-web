@@ -1,12 +1,25 @@
 
 const USER_PASSWORD = process.env.USER_PASSWORD ?? "ChatGPT"
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "ChatGPTAdmin"
+
+enum UserType {
+    anonymous = 0,
+    common = 1,
+    admin = 2,
+}
 
 export async function POST(req: Request): Promise<Response> {
     const { password } = (await req.json()) as { password: string };
 
-    const result = password == USER_PASSWORD
+    let userType: UserType = UserType.anonymous
+    if (password == USER_PASSWORD) {
+        userType = UserType.common
+    }
+    if (password == ADMIN_PASSWORD) {
+        userType = UserType.admin
+    }
 
-    return new Response(JSON.stringify({ result }), {
+    return new Response(JSON.stringify({ userType }), {
         headers: {
             'Content-Type': 'application/json',
         },

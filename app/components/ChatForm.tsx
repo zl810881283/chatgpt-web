@@ -55,10 +55,10 @@ export const ChatForm: FC = () => {
       React.FormEvent<HTMLFormElement>
   ) => {
     // use meta+enter/ctrl+enter to submit
-    if (e.key === 'Enter'&& (e.metaKey || e.ctrlKey) && isLoading === false) {
-      e.preventDefault();
-      handleSubmit(e);
-    }
+    // if (e.key === 'Enter'&& !(e.metaKey || e.ctrlKey) && isLoading === false) {
+    //   e.preventDefault();
+    //   handleSubmit(e);
+    // }
   };
   const scrollToBottom = (always = false) => {
     if (bottomLine && bottomLine.current) {

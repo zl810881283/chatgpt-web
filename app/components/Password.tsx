@@ -35,7 +35,7 @@ export const Password: FC<PasswordProps> = ({ onSuccess }) => {
 
 	const chackPassword = async (password: string) => {
 
-		const { result } = await (await fetch('/api/password-check', {
+		const { userType } = await (await fetch('/api/password-check', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -45,9 +45,10 @@ export const Password: FC<PasswordProps> = ({ onSuccess }) => {
 			}),
 		})).json();
 
-		if (result) {
+		if (userType) {
 			onSuccess?.()
 			localStorage.setItem('password', password);
+			localStorage.setItem('userType', userType);
 		} else {
 			setPasswordError(true)
 		}
