@@ -1,6 +1,7 @@
 'use client';
 import { FC, useState } from 'react';
 import useSWR from 'swr';
+import { UserType } from '../types';
 
 type PasswordProps = {
 	onSuccess?: () => void
@@ -45,7 +46,7 @@ export const Password: FC<PasswordProps> = ({ onSuccess }) => {
 			}),
 		})).json();
 
-		if (userType) {
+		if (userType != UserType.anonymous) {
 			onSuccess?.()
 			localStorage.setItem('password', password);
 			localStorage.setItem('userType', userType);

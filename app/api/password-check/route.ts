@@ -1,12 +1,7 @@
+import { UserType } from "@/app/types";
 
 const USER_PASSWORD = process.env.USER_PASSWORD ?? "ChatGPT"
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "ChatGPTAdmin"
-
-enum UserType {
-    anonymous = 0,
-    common = 1,
-    admin = 2,
-}
 
 export async function POST(req: Request): Promise<Response> {
     const { password } = (await req.json()) as { password: string };

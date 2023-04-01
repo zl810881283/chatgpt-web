@@ -1,11 +1,12 @@
 'use client';
 import { ChatGPTMessage } from '@/app/api/chat/route';
-import { Alert, Button, Divider, FormControlLabel, FormGroup, IconButton, InputBase, Paper, Snackbar, Switch } from '@mui/material';
+import { Alert, AppBar, Button, Divider, FormControlLabel, FormGroup, IconButton, InputBase, Paper, Snackbar, Switch, Toolbar, Typography } from '@mui/material';
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
 import SendIcon from '@mui/icons-material/Send';
-import useResizeObserver from '@react-hook/resize-observer'
+import { UserType } from '../types';
+import { Settings } from '@mui/icons-material'
 
 interface ModelType {
   object: 'engine';
@@ -55,10 +56,10 @@ export const ChatForm: FC = () => {
       React.FormEvent<HTMLFormElement>
   ) => {
     // use meta+enter/ctrl+enter to submit
-    // if (e.key === 'Enter'&& !(e.metaKey || e.ctrlKey) && isLoading === false) {
-    //   e.preventDefault();
-    //   handleSubmit(e);
-    // }
+    if (!isLoading && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
   };
   const scrollToBottom = (always = false) => {
     if (bottomLine && bottomLine.current) {
@@ -80,7 +81,10 @@ export const ChatForm: FC = () => {
       content: userInput
     }]
 
-    if (isConversation && currMessageList.map(i => i.content.length).reduce((i, j) => i + j, 0) > 2000) {
+    const userType = localStorage.getItem('userType') as UserType
+
+
+    if (userType != UserType.admin && isConversation && currMessageList.map(i => i.content.length).reduce((i, j) => i + j, 0) > 2000) {
       showAlert("Current conversation has too many tokens(>2000), please close conversation mode or click \"Clear\" button to start a new conversation")
       return
     }
@@ -189,6 +193,22 @@ export const ChatForm: FC = () => {
         >Export</Button>
 
       </div>
+      {/* <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            ChatGPT
+          </Typography>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <Settings />
+          </IconButton>
+        </Toolbar>
+      </AppBar> */}
 
 
       <div className='w-full mx-2 flex flex-col items-start gap-3 md:mx-auto md:max-w-3xl mt-20'>
@@ -220,7 +240,7 @@ export const ChatForm: FC = () => {
         <InputBase
           className='max-h-40 overflow-y-auto'
           sx={{ ml: 1, flex: 1 }}
-          placeholder="Type your query, use ctrl or command + enter to submit"
+          placeholder="Type your query, use enter to submit, shift + enter to start a new line"
           multiline
           value={userInput}
           onChange={(evt) => setUserInput(evt.target.value)}
