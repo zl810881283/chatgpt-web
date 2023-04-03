@@ -90,7 +90,7 @@ export const ChatForm: FC = () => {
     const userType = localStorage.getItem('userType') as UserType
 
 
-    if (userType != UserType.admin && settings.isConversation && currMessageList.map(i => i.content.length).reduce((i, j) => i + j, 0) > 20) {
+    if (userType != UserType.admin && settings.isConversation && currMessageList.map(i => i.content.length).reduce((i, j) => i + j, 0) > 2000) {
       showAlert("Current conversation has too many tokens(>2000), please close conversation mode or click \"Clear\" button to start a new conversation")
       return
     }
