@@ -1,11 +1,10 @@
 'use client';
-import { ChatGPTMessage } from '@/app/api/chat/route';
 import { Alert, AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControlLabel, FormGroup, IconButton, InputBase, Modal, Paper, Snackbar, Switch, TextField, Toolbar, Typography } from '@mui/material';
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
 import SendIcon from '@mui/icons-material/Send';
-import { UserType } from '../types';
+import { ChatGPTMessage, UserType } from '../types';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SettingsDialog } from './SettingsDialog';

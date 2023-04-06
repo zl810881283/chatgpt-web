@@ -1,3 +1,4 @@
+import { OpenAIStreamPayload } from '@/app/types';
 import {
   createParser,
   ParsedEvent,
@@ -6,24 +7,7 @@ import {
 
 export const runtime = 'edge'
 
-export type ChatGPTAgent = 'user' | 'system' | 'assistant';
 
-export interface ChatGPTMessage {
-  role: ChatGPTAgent;
-  content: string;
-}
-
-export interface OpenAIStreamPayload {
-  model: string;
-  messages: ChatGPTMessage[];
-  temperature?: number;
-  top_p?: number;
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  max_tokens?: number;
-  stream?: boolean;
-  n?: number;
-}
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 if (!OPENAI_API_KEY) {
@@ -104,7 +88,6 @@ export async function POST(req: Request): Promise<Response> {
     ...{
       model: 'gpt-3.5-turbo',
       stream: true,
-      max_tokens: 2000,
     }
   };
 
