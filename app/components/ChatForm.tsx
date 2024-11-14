@@ -1,5 +1,5 @@
 'use client';
-import { Alert, AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControlLabel, FormGroup, IconButton, InputBase, Modal, Paper, Snackbar, Switch, TextField, Toolbar, Typography } from '@mui/material';
+import { Alert, AppBar, IconButton, InputBase, Paper, Snackbar, Toolbar, Typography } from '@mui/material';
 import useIntersectionObserver from '@react-hook/intersection-observer';
 import { FC, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -49,8 +49,6 @@ export const ChatForm: FC = () => {
 
   const [showSettingDialog, setShowSettingDialog] = useState<boolean>(false);
 
-  const [models, setModels] = useState<ModelType[]>([]);
-  const [currentModel, setCurrentModel] = useState<string>('gpt-3.5-turbo');
 
   const bottomLine = useRef<HTMLDivElement>(null);
 
@@ -163,17 +161,7 @@ export const ChatForm: FC = () => {
     }
   });
 
-  const fetcher = async () => {
-    const models = await (await fetch('/api/models')).json();
-    setModels(models.data);
-    const modelIndex = models.data.findIndex(
-      (model: ModelType) => model.id === 'gpt-3.5-turbo'
-    );
-    setCurrentModel(models.data[modelIndex].id);
-    return models;
-  };
 
-  useSWR('fetchingModels', fetcher);
 
 
   return (
